@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      initialRoute: '/edit-profile',
+      initialRoute: '/homepage',
       routes: {
         "/homepage": (context) => const Homepage(),
         "/edit-profile": (context) => const EditProfilePage(),

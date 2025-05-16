@@ -4,6 +4,8 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:convert';
 
+import 'package:frontend/services/http_services.dart';
+
 class DisplayBodyMetricsScreen extends StatelessWidget {
   final List<Map<String, dynamic>> bodyMetrics;
 
@@ -95,22 +97,24 @@ class DisplayBodyMetricsScreen extends StatelessWidget {
     }
   }
 }
+class BluetoothConnectionScreen extends StatefulWidget {
+  final Map<String, dynamic> userData;
 
-class BlueetoothConnectionScreen extends StatefulWidget {
-  const BlueetoothConnectionScreen({super.key});
+  const BluetoothConnectionScreen({super.key, required this.userData});
 
   @override
-  State<BlueetoothConnectionScreen> createState() =>
-      _BlueetoothConnectionScreenState();
+  State<BluetoothConnectionScreen> createState() =>
+      _BluetoothConnectionScreenState();
 }
 
-class _BlueetoothConnectionScreenState
-    extends State<BlueetoothConnectionScreen> {
+class _BluetoothConnectionScreenState
+    extends State<BluetoothConnectionScreen> {
   BluetoothDevice? miScale;
   bool _isConnecting = true;
   bool _isConnected = false;
   bool _finishGetingWeight = false;
   double _weight = 0.0;
+  late Map<String, dynamic> userData;
 
   final Guid serviceUuid = Guid('0000181d-0000-1000-8000-00805f9b34fb');
   final Guid characteristicUuid = Guid('00002a9d-0000-1000-8000-00805f9b34fb');
@@ -118,6 +122,7 @@ class _BlueetoothConnectionScreenState
   @override
   void initState() {
     super.initState();
+    userData = Map<String, dynamic>.from(widget.userData); // Tạo bản sao dữ liệu user
     startScan();
   }
 
@@ -134,19 +139,15 @@ class _BlueetoothConnectionScreenState
         withNames: ["MI SCALE2"],
       );
 
-      // Set a timer to check if no device is found within the timeout
       Future.delayed(const Duration(seconds: 30), () {
         if (!_isConnected) {
           setState(() {
             _isConnecting = false;
-
             print("MI SCALE 2 not found.");
-            return;
           });
         }
       });
 
-      // Listen to scan results
       FlutterBluePlus.scanResults.listen((results) {
         if (results.isNotEmpty) {
           ScanResult scaleResult = results.last;
@@ -168,7 +169,6 @@ class _BlueetoothConnectionScreenState
   }
 
   Future<void> processReceivedData(List<int> data) async {
-    // Extract the weight from the data bytes
     int weightValue = (data[1] | (data[2] << 8));
     double weight = weightValue / 200;
 
@@ -177,19 +177,18 @@ class _BlueetoothConnectionScreenState
 
     if (isWeightStable && !isWeightRemoved) {
       try {
-        await miScale?.disconnect();
+        await miScale?.disconnect(); // Ngắt kết nối khi cân xong
         setState(() {
           _finishGetingWeight = true;
           _weight = weight;
         });
       } catch (e) {
-        print('Error connecting to device: $e');
+        print('Error disconnecting device: $e');
       }
-    } else {
-      // tell user that weight is removed
     }
 
     print("Weight: ${weight.toStringAsFixed(2)} kg");
+
     setState(() {
       _weight = weight;
     });
@@ -200,22 +199,15 @@ class _BlueetoothConnectionScreenState
       await device.connect();
       print('Connected to ${device.platformName}');
 
-      // Discover services and find the specific characteristic
       List<BluetoothService> services = await device.discoverServices();
       for (BluetoothService service in services) {
-        for (BluetoothCharacteristic characteristic
-            in service.characteristics) {
+        for (BluetoothCharacteristic characteristic in service.characteristics) {
           if (characteristic.uuid == characteristicUuid) {
             print('Found characteristic with UUID: ${characteristic.uuid}');
-
-            // Read data from the characteristic
             characteristic.setNotifyValue(true);
             characteristic.lastValueStream.listen((value) {
-              // Handle received value
               if (value.isNotEmpty) {
                 processReceivedData(value);
-              } else {
-                print('Received empty value list. Skipping dataParser.');
               }
             });
           }
@@ -226,8 +218,37 @@ class _BlueetoothConnectionScreenState
     }
   }
 
+  // Hàm gửi dữ liệu lên server và trả về kết quả phân tích chỉ số cơ thể
+  Future<Map<String, dynamic>?> _sendData() async {
+    userData['weight'] = _weight;
+    try {
+      final response = await HttpServices().post('/metrics', data: userData);
+      if (response != null && response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+    } catch (e) {
+      print('Error sending weight data: $e');
+    }
+    return null;
+  }
+
+  // Hàm xử lý sau khi lấy được cân nặng
+  Future<void> _handleFinishWeight() async {
+    final res = await _sendData(); // Gửi lên server
+    if (res != null && mounted) {
+      // mounted để đảm bảo widget chưa bị huỷ
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DisplayBodyMetricsScreen(bodyMetrics: res['metrics']),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Khi đang kết nối Bluetooth
     if (_isConnecting) {
       return Scaffold(
         body: Container(
@@ -239,7 +260,7 @@ class _BlueetoothConnectionScreenState
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 100,
                       width: 100,
                       child: CircularProgressIndicator(color: Colors.lightBlue),
@@ -252,8 +273,8 @@ class _BlueetoothConnectionScreenState
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
-                Text(
+                const SizedBox(height: 20),
+                const Text(
                   'Connecting to MI SCALE 2',
                   style: TextStyle(
                     fontSize: 20,
@@ -261,7 +282,7 @@ class _BlueetoothConnectionScreenState
                     fontFamily: 'Roboto',
                   ),
                 ),
-                Text(
+                const Text(
                   'Please step on the scale',
                   style: TextStyle(
                     fontSize: 12,
@@ -274,20 +295,26 @@ class _BlueetoothConnectionScreenState
           ),
         ),
       );
+    }
+
+    // Khi đã cân xong
+    if (_finishGetingWeight) {
+      _finishGetingWeight = false; // Đánh dấu đã xử lý
+      _handleFinishWeight(); // Gửi dữ liệu và điều hướng
+    }
+
+    // Khi đã kết nối và chưa gửi dữ liệu
+    if (_isConnected) {
+      return WeightDisplayScreen(
+        weight: _weight,
+      );
     } else {
-      if (_finishGetingWeight) {
-        
-      }
-      if (_isConnected) {
-        return WeightDisplayScreen(
-          weight: _weight,
-        ); // Navigate to Weight Display screen on success
-      } else {
-        return const CannotConnectScreen(); // Show error screen if connection failed
-      }
+      return const CannotConnectScreen();
     }
   }
 }
+
+
 
 class CannotConnectScreen extends StatelessWidget {
   const CannotConnectScreen({super.key});
