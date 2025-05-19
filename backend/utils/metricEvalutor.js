@@ -89,7 +89,7 @@ export function evaluate_overall_health(bmi, age, gender, race) {
         evaluation.push("Giới tính: Nữ - Cần chú ý cân bằng mỡ và cơ");
     }
 
-    evaluation.push(`Chủng tộc: ${race ? race : "asian"} - Áp dụng ngưỡng sức khỏe phù hợp`);
+    evaluation.push(`Chủng tộc: ${race === 'asian' ? "Châu Á" : "Khác"} - Áp dụng ngưỡng sức khỏe phù hợp`);
 
     if (bmi_eval.status.includes("Bình thường") && age < 65) {
         overall_status += "Tốt - Tiếp tục duy trì lối sống lành mạnh";

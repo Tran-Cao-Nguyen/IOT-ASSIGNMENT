@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:frontend/consts.dart';
 import 'dart:async';
 import 'dart:math';
 import 'dart:convert';
@@ -17,7 +18,7 @@ class DisplayBodyMetricsScreen extends StatelessWidget {
     if (bodyMetrics.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Body Metrics'),
+          title: const Text('Chỉ số sức khỏe'),
           centerTitle: true,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -39,11 +40,16 @@ class DisplayBodyMetricsScreen extends StatelessWidget {
       );
     } else {
       final filteredMetrics =
-          bodyMetrics.where((metric) => metric.containsKey('key')).toList();
+          bodyMetrics.where((metric) => metric.containsKey('name')).toList();
+      final overallMap =
+          bodyMetrics.firstWhere(
+            (item) => item.containsKey("overall"),
+            orElse: () => {},
+          )["overall"];
 
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Body Metrics'),
+          title: const Text('Chỉ số sức khỏe'),
           centerTitle: true,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -56,53 +62,157 @@ class DisplayBodyMetricsScreen extends StatelessWidget {
             },
           ),
         ),
-        body: ListView.builder(
-          padding: const EdgeInsets.all(16.0),
-          itemCount: filteredMetrics.length,
-          itemBuilder: (context, index) {
-            final metric = filteredMetrics[index];
-            return Card(
-              elevation: 4,
-              margin: const EdgeInsets.symmetric(vertical: 8.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        body: Stack(
+          children: [
+            ListView.builder(
+              padding: const EdgeInsets.all(16.0),
+              itemCount: filteredMetrics.length,
+              itemBuilder: (context, index) {
+                final metric = filteredMetrics[index];
+                return Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          metric['name'] ?? '',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              metric['name'] ?? '',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${metric['value'] ?? ''} ${metric['unit'] ?? ''}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '${metric['value'] ?? ''} ${metric['unit'] ?? ''}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
+                        const Icon(
+                          Icons.fitness_center,
+                          color: Colors.blueAccent,
+                          size: 40,
                         ),
                       ],
                     ),
-                    const Icon(
-                      Icons.fitness_center,
-                      color: Colors.blueAccent,
-                      size: 40,
-                    ),
-                  ],
-                ),
+                  ),
+                );
+              },
+            ),
+            Positioned(
+              bottom: 20,
+              right: 20,
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Đánh giá chi tiết",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+
+                                // Evaluation list
+                                ...(overallMap?['evaluation'] as List<dynamic>?)
+                                        ?.map<Widget>(
+                                          (e) => Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 4.0,
+                                            ),
+                                            child: Text("• $e"),
+                                          ),
+                                        )
+                                        .toList() ??
+                                    [const Text("Không có đánh giá.")],
+
+                                const SizedBox(height: 15),
+                                const Text(
+                                  "Khuyến nghị",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                ...(overallMap?['recommendations']
+                                            as List<dynamic>?)
+                                        ?.map<Widget>(
+                                          (r) => Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 4.0,
+                                            ),
+                                            child: Text("• $r"),
+                                          ),
+                                        )
+                                        .toList() ??
+                                    [const Text("Không có khuyến nghị.")],
+
+                                const SizedBox(height: 15),
+                                const Text(
+                                  "Tình trạng tổng quan",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  overallMap?['overall_status'] ??
+                                      'Không có dữ liệu',
+                                ),
+
+                                const SizedBox(height: 20),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: ElevatedButton(
+                                    onPressed:
+                                        () => Navigator.of(context).pop(),
+                                    child: const Text("Đóng"),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                backgroundColor: AppColors.mainColor,
+                foregroundColor: Colors.white,
+                icon: const Icon(Icons.assessment, size: 30),
+                label: const Text("Phân tích", style: TextStyle(fontSize: 16)),
               ),
-            );
-          },
+            ),
+          ],
         ),
       );
     }
