@@ -38,6 +38,9 @@ class DisplayBodyMetricsScreen extends StatelessWidget {
         ),
       );
     } else {
+      final filteredMetrics =
+          bodyMetrics.where((metric) => metric.containsKey('key')).toList();
+
       return Scaffold(
         appBar: AppBar(
           title: const Text('Body Metrics'),
@@ -45,15 +48,19 @@ class DisplayBodyMetricsScreen extends StatelessWidget {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                "/homepage",
+                (Route<dynamic> route) => false,
+              );
             },
           ),
         ),
         body: ListView.builder(
           padding: const EdgeInsets.all(16.0),
-          itemCount: bodyMetrics.length,
+          itemCount: filteredMetrics.length,
           itemBuilder: (context, index) {
-            final metric = bodyMetrics[index];
+            final metric = filteredMetrics[index];
             return Card(
               elevation: 4,
               margin: const EdgeInsets.symmetric(vertical: 8.0),

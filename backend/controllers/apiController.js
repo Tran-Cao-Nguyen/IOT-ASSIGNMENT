@@ -1,4 +1,5 @@
 import { BodyMetricsCalculator } from '../utils/calculateMetrics.js';
+import { evaluate_overall_health } from '../utils/metricEvalutor.js';
 
 export const calculateMetrics = (req, res) => {
     const { gender, race, birthday, height, weight, activityFactor } = req.body;
@@ -14,6 +15,7 @@ export const calculateMetrics = (req, res) => {
     const proteinPercentage = BodyMetricsCalculator.getProteinPercentage(weight, height, age, gender);
     const visceralFat = BodyMetricsCalculator.getVisceralFat(weight, height, age, gender);
     const idealWeight = BodyMetricsCalculator.getIdealWeight(height, gender);
+    const overall = evaluate_overall_health(bmi, age, gender, race);
 
     const metrics = [
         { key: "Weight", name: "Cân nặng", value: weight, unit: "Kg" },
@@ -27,7 +29,8 @@ export const calculateMetrics = (req, res) => {
         { key: "Muscle Mass", name: "Khối lượng cơ", value: muscleMass, unit: "kg" },
         { key: "Protein %", name: "Tỉ lệ protein", value: proteinPercentage, unit: "%" },
         { key: "Visceral Fat", name: "Mỡ nội tạng", value: visceralFat, unit: "kg" },
-        { key: "Ideal Weight", name: "Cân nặng lý tưởng", value: idealWeight, unit: "kg" }
+        { key: "Ideal Weight", name: "Cân nặng lý tưởng", value: idealWeight, unit: "kg" },
+        {overall},
     ];
 
 
