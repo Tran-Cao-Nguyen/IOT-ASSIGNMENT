@@ -11,10 +11,9 @@ class AppColors {
   static const appGreen = Color(0xFF4CAF50);
 }
 
-// const String API_URL = "http://caonguyen-laptop:5000/api";
-const String API_URL = "http://192.168.1.5:5000/api";
-// const String API_URL = "http://trucle-pc:5000/api";
-// const String API_URL = "http://truc-laptop:5000/api";
+
+const String API_URL = "http://172.28.182.114:5000/api";
+
 
 
 const String clientId = "826256785503-103rge9mri0sn359v4cuehqbirm38rrl.apps.googleusercontent.com";

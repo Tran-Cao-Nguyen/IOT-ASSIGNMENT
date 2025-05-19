@@ -3,7 +3,6 @@ export class BodyMetricsCalculator {
     const today = new Date();
     const birthDate = new Date(dateOfBirth);
     if (isNaN(birthDate) || birthDate > today) return null;
-
     let age = today.getFullYear() - birthDate.getFullYear();
     const isBirthdayPassed =
       today.getMonth() > birthDate.getMonth() ||

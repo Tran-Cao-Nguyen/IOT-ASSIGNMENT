@@ -22,7 +22,11 @@ class DisplayBodyMetricsScreen extends StatelessWidget {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                "/homepage",
+                (Route<dynamic> route) => false,
+              );
             },
           ),
         ),
@@ -97,6 +101,7 @@ class DisplayBodyMetricsScreen extends StatelessWidget {
     }
   }
 }
+
 class BluetoothConnectionScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
 
@@ -107,8 +112,7 @@ class BluetoothConnectionScreen extends StatefulWidget {
       _BluetoothConnectionScreenState();
 }
 
-class _BluetoothConnectionScreenState
-    extends State<BluetoothConnectionScreen> {
+class _BluetoothConnectionScreenState extends State<BluetoothConnectionScreen> {
   BluetoothDevice? miScale;
   bool _isConnecting = true;
   bool _isConnected = false;
@@ -122,7 +126,9 @@ class _BluetoothConnectionScreenState
   @override
   void initState() {
     super.initState();
-    userData = Map<String, dynamic>.from(widget.userData); // Tạo bản sao dữ liệu user
+    userData = Map<String, dynamic>.from(
+      widget.userData,
+    ); // Tạo bản sao dữ liệu user
     startScan();
   }
 
@@ -201,7 +207,8 @@ class _BluetoothConnectionScreenState
 
       List<BluetoothService> services = await device.discoverServices();
       for (BluetoothService service in services) {
-        for (BluetoothCharacteristic characteristic in service.characteristics) {
+        for (BluetoothCharacteristic characteristic
+            in service.characteristics) {
           if (characteristic.uuid == characteristicUuid) {
             print('Found characteristic with UUID: ${characteristic.uuid}');
             characteristic.setNotifyValue(true);
@@ -224,7 +231,8 @@ class _BluetoothConnectionScreenState
     try {
       final response = await HttpServices().post('/metrics', data: userData);
       if (response != null && response.statusCode == 200) {
-        return jsonDecode(response.body);
+        final data = jsonDecode(response.body);
+        return data;
       }
     } catch (e) {
       print('Error sending weight data: $e');
@@ -236,11 +244,14 @@ class _BluetoothConnectionScreenState
   Future<void> _handleFinishWeight() async {
     final res = await _sendData(); // Gửi lên server
     if (res != null && mounted) {
-      // mounted để đảm bảo widget chưa bị huỷ
+      final List<dynamic> rawMetrics = res['metrics'];
+      final List<Map<String, dynamic>> metrics =
+          rawMetrics.map((e) => Map<String, dynamic>.from(e)).toList();
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => DisplayBodyMetricsScreen(bodyMetrics: res['metrics']),
+          builder: (context) => DisplayBodyMetricsScreen(bodyMetrics: metrics),
         ),
       );
     }
@@ -305,16 +316,12 @@ class _BluetoothConnectionScreenState
 
     // Khi đã kết nối và chưa gửi dữ liệu
     if (_isConnected) {
-      return WeightDisplayScreen(
-        weight: _weight,
-      );
+      return WeightDisplayScreen(weight: _weight);
     } else {
       return const CannotConnectScreen();
     }
   }
 }
-
-
 
 class CannotConnectScreen extends StatelessWidget {
   const CannotConnectScreen({super.key});

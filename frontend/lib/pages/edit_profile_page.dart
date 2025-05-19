@@ -268,7 +268,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   if (_formKey.currentState!.validate() && _birthDateError == null) {
                     var data = {
                       // "fullName": _fullnameController.text,
-                      "dateOfBirth": _selectedDate?.toIso8601String(),
+                      "birthday": _selectedDate?.toIso8601String(),
                       "gender": _selectedGender,
                       "race": _selectedRace,
                       "height": _heightController.text,

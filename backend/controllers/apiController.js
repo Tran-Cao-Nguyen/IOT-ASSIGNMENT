@@ -2,7 +2,6 @@ import { BodyMetricsCalculator } from '../utils/calculateMetrics.js';
 
 export const calculateMetrics = (req, res) => {
     const { gender, race, birthday, height, weight, activityFactor } = req.body;
-
     const age = BodyMetricsCalculator.getAge(birthday);
     const bmi = BodyMetricsCalculator.getBmi(weight, height);
     const bmr = BodyMetricsCalculator.getBmr(weight, height, age, gender);
@@ -17,19 +16,20 @@ export const calculateMetrics = (req, res) => {
     const idealWeight = BodyMetricsCalculator.getIdealWeight(height, gender);
 
     const metrics = [
-        { name: "Weight", value: weight, unit: "Kg" },
-        { name: "BMI", value: bmi, unit: "" },
-        { name: "BMR", value: bmr, unit: "kcal/day" },
-        { name: "TDEE", value: tdee, unit: "kcal/day" },
-        { name: "LBM", value: lbm, unit: "kg" },
-        { name: "Fat %", value: fatPercentage, unit: "%" },
-        { name: "Water %", value: waterPercentage, unit: "%" },
-        { name: "Bone Mass", value: boneMass, unit: "kg" },
-        { name: "Muscle Mass", value: muscleMass, unit: "kg" },
-        { name: "Protein %", value: proteinPercentage, unit: "%" },
-        { name: "Visceral Fat", value: visceralFat, unit: "kg" },
-        { name: "Ideal Weight", value: idealWeight, unit: "kg" }
+        { key: "Weight", name: "Cân nặng", value: weight, unit: "Kg" },
+        { key: "BMI", name: "Chỉ số khối (BMI)", value: bmi, unit: "" },
+        { key: "BMR", name: "Tỉ lệ trao đổi chất (BMR)", value: bmr, unit: "kcal/ngày" },
+        { key: "TDEE", name: "Năng lượng tiêu hao (TDEE)", value: tdee, unit: "kcal/ngày" },
+        { key: "LBM", name: "Khối lượng không mỡ (LBM)", value: lbm, unit: "kg" },
+        { key: "Fat %", name: "Tỉ lệ mỡ", value: fatPercentage, unit: "%" },
+        { key: "Water %", name: "Tỉ lệ nước", value: waterPercentage, unit: "%" },
+        { key: "Bone Mass", name: "Khối lượng xương", value: boneMass, unit: "kg" },
+        { key: "Muscle Mass", name: "Khối lượng cơ", value: muscleMass, unit: "kg" },
+        { key: "Protein %", name: "Tỉ lệ protein", value: proteinPercentage, unit: "%" },
+        { key: "Visceral Fat", name: "Mỡ nội tạng", value: visceralFat, unit: "kg" },
+        { key: "Ideal Weight", name: "Cân nặng lý tưởng", value: idealWeight, unit: "kg" }
     ];
 
-    return res.json(metrics);
+
+    return res.json({ metrics });
 };
