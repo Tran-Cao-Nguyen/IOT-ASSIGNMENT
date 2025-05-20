@@ -36,7 +36,7 @@ export const calculateMetrics = async (req, res) => {
       { key: "Protein_Percentage", name: "Tỉ lệ protein", value: proteinPercentage, unit: "%" },
       { key: "Visceral_Fat", name: "Mỡ nội tạng", value: visceralFat, unit: "kg" },
       { key: "Ideal_Weight", name: "Cân nặng lý tưởng", value: idealWeight, unit: "kg" },
-      { key: "Overall", name: "Đánh giá tổng thể", value: overall.status, unit: "" },
+      { key: "Overall", name: "Đánh giá tổng thể", value: overall.overall_status, unit: "" },
       {overall},
 ];
 
