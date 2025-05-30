@@ -435,13 +435,15 @@ class _BluetoothConnectionScreenState extends State<BluetoothConnectionScreen> {
     if (_isConnected) {
       return WeightDisplayScreen(weight: _weight);
     } else {
-      return const CannotConnectScreen();
+      return CannotConnectScreen(userData: userData,);
     }
   }
 }
 
 class CannotConnectScreen extends StatelessWidget {
-  const CannotConnectScreen({super.key});
+  final Map<String, dynamic> userData;
+
+  const CannotConnectScreen({super.key, required this.userData});
 
   @override
   Widget build(BuildContext context) {
@@ -453,7 +455,7 @@ class CannotConnectScreen extends StatelessWidget {
       ),
       body: Container(
         color: Colors.white,
-        child: const Center(
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -479,9 +481,27 @@ class CannotConnectScreen extends StatelessWidget {
                   fontFamily: 'Roboto',
                 ),
               ),
-              // ElevatedButton(
-              //   child: const Text('Retry'),
-              // ),
+              SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                width: 150,
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    
+                  ),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BluetoothConnectionScreen(userData: userData),
+                      ),
+                    );
+                  },
+                  child: Text('Retry'),
+                ),
+              ),
+
             ],
           ),
         ),
