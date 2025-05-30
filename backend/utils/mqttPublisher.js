@@ -38,7 +38,7 @@ export async function connectToMqttBroker(maxRetries = 3, retryDelay = 1000) {
       if (retries >= maxRetries) {
         throw new Error(`Không thể kết nối MQTT sau ${maxRetries} lần: ${err.message}`);
       }
-      console.log(`🔁 Thử lại kết nối (${retries}/${maxRetries})...`);
+      console.log(`Thử lại kết nối (${retries}/${maxRetries})...`);
       await new Promise(resolve => setTimeout(resolve, retryDelay));
     }
   }
@@ -57,8 +57,6 @@ export const sendMetricsToMQTT = async (metrics) => {
         payload[metric.key] = metric.value;
       }
     }
-
-    console.log('Payload gửi MQTT:', payload);
 
     await new Promise((resolve, reject) => {
       client.publish(MQTT_TOPIC, JSON.stringify(payload), { qos: 1 }, (err) => {

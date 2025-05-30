@@ -39,8 +39,16 @@ class DisplayBodyMetricsScreen extends StatelessWidget {
         ),
       );
     } else {
-      final filteredMetrics =
-          bodyMetrics.where((metric) => metric.containsKey('name')).toList();
+      final filteredMetrics = bodyMetrics
+    .where((metric) =>
+        metric is Map<String, dynamic> &&
+        metric["key"] != "Overall" && 
+        metric.containsKey("key"),
+        ) 
+    .toList();
+
+    print("test: $filteredMetrics");
+
       final overallMap =
           bodyMetrics.firstWhere(
             (item) => item.containsKey("overall"),

@@ -12,7 +12,7 @@ class AppColors {
 }
 
 
-const String API_URL = "http://172.28.182.114:5000/api";
+const String API_URL = "http://172.28.182.12:5000/api";
 
 
 
