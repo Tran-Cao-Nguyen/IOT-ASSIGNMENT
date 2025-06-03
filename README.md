@@ -1,9 +1,8 @@
-# Project Name
 
 # IoT Health Scale Project
 
 ## Overview
-This IoT project leverages an electronic health scale to collect and analyze body metrics such as weight, body fat percentage, muscle mass, and BMI (Body Mass Index). The system integrates the health scale with a backend server and a mobile front end to provide real-time data tracking, storage, and visualization of health metrics. The data is transmitted via IoT protocols (e.g., MQTT or HTTP) to a cloud-based server for processing and storage, enabling users to monitor their health trends through a Flutter-based mobile application.
+This IoT project leverages an electronic health scale to collect and analyze body metrics such as weight, body fat percentage, muscle mass, and BMI (Body Mass Index). The system integrates the health scale with a backend server and a mobile front end to provide real-time data tracking, storage, and visualization of health metrics. The data is transmitted via IoT protocols MQTT to a cloud-based server for processing and storage, enabling users to monitor their health trends through a Flutter-based mobile application.
 
 The project aims to deliver a seamless user experience for health-conscious individuals, offering insights into their body metrics and personalized health recommendations based on the collected data.
 
@@ -15,8 +14,8 @@ The project aims to deliver a seamless user experience for health-conscious indi
 - **IoT Connectivity**: Utilizes MQTT protocols for reliable communication between the health scale and the backend.
 
 ## System Architecture
-- **Hardware**: Electronic health scale equipped with sensors (e.g., load cells, bioelectrical impedance analysis) and an IoT module (e.g., ESP32 or Raspberry Pi).
-- **Backend**: Node.js-based server for handling data processing, storage (e.g., MongoDB or PostgreSQL), and API endpoints.
+- **Hardware**: Electronic health scale XiaoMi Scale 2.
+- **Backend**: Node.js-based server for handling data processing, storage and API endpoints.
 - **Frontend**: Flutter mobile app for user interaction, data visualization, and health insights.
 - **Communication**: IoT protocols (MQTT) ensure secure and efficient data transfer between the scale, backend, and mobile app.
 
@@ -34,27 +33,28 @@ The project aims to deliver a seamless user experience for health-conscious indi
 ## Requirements
 - Node.js and npm (for backend)
 - Flutter and Dart (for frontend)
-- IoT hardware (e.g., ESP32, health scale sensors)
-- Cloud service (e.g., AWS, Google Cloud) for data storage and processing
+- IoT hardware (XiaoMi Scale 2)
+- Cloud service (CoreIoT Platform) for data storage and processing
 - Android Studio (for emulator testing, if needed)
 - Mobile device with USB cable (optional, for testing)
 
 ## Installation and Running Instructions
 
-### 1. Back End
-1. Clone the repository to your local machine:
+### 1. Clone the repository to your local machine:
    ```bash
    git clone <repository_url>
    ```
-2. Navigate to the back end directory:
+
+### 1. Back End
+1. Navigate to the back end directory:
    ```bash
    cd backend
    ```
-3. Install dependencies:
+2. Install dependencies:
    ```bash
    npm install
    ```
-4. Start the server:
+3. Start the server:
    ```bash
    npm start
    ```
