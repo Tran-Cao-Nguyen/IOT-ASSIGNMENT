@@ -42,10 +42,10 @@ The project aims to deliver a seamless user experience for health-conscious indi
 
 ### 1. Clone the repository to your local machine:
    ```bash
-   git clone <repository_url>
+   git clone <https://github.com/Tran-Cao-Nguyen/IOT-ASSIGNMENT)>
    ```
 
-### 1. Back End
+### 2. Back End
 1. Navigate to the back end directory:
    ```bash
    cd backend
@@ -59,7 +59,7 @@ The project aims to deliver a seamless user experience for health-conscious indi
    npm start
    ```
 
-### 2. Front End
+### 3. Front End
 1. Navigate to the front end directory:
    ```bash
    cd ../frontend
