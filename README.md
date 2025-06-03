@@ -42,7 +42,7 @@ The project aims to deliver a seamless user experience for health-conscious indi
 
 ### 1. Clone the repository to your local machine:
    ```bash
-   git clone <https://github.com/Tran-Cao-Nguyen/IOT-ASSIGNMENT)>
+   git clone https://github.com/Tran-Cao-Nguyen/IOT-ASSIGNMENT
    ```
 
 ### 2. Back End
