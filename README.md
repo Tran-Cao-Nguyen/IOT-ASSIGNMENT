@@ -68,8 +68,9 @@ The project aims to deliver a seamless user experience for health-conscious indi
    ```bash
    flutter pub get
    ```
-3. Locate the `main.dart` file in the `lib/` directory.
-4. Run the application:
+3. Change `API_URL` in the `lib/consts.dart` directory to the url your backend url running on
+4. Locate the `main.dart` file in the `lib/` directory.
+5. Run the application:
    - **If you have a mobile device**: Connect it via USB cable, ensure USB Debugging is enabled, then run:
      ```bash
      flutter run
